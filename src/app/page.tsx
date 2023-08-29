@@ -137,7 +137,7 @@ export default function Home() {
         </section>
         <section>
           <button onClick={btnCatalogsEvent}>Get Catalogs</button>
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
             {catalogs && catalogs.map((proj, i) => {
               return <div key={i}>
                 <h4>{proj.name}</h4>

@@ -1,15 +1,3 @@
-import { errorNotification } from "./notifications";
-
-export const checkEmptyDates = (dates: Date[]): boolean => {
-    let isSomeDateEmpty: boolean = dates.some(d => !d);
-
-    if (isSomeDateEmpty) {
-        errorNotification("Debes seleccionar ambas fechas");
-    }
-
-    return isSomeDateEmpty;
-}
-
 export const dateFormatter = Intl.DateTimeFormat('es-ES', {
     hour12: false,
     dateStyle: 'short',

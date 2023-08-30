@@ -3,9 +3,10 @@ import { TLogin } from '@/models/DTOs'
 import { TCatalog, TWorklog } from '@/models/POJOs'
 import { buildWorklogObj } from '@/services/BuildWorklog'
 import { NETFOREMOST_ID } from '@/utils/constants'
-import { addHours, addSeconds, checkEmptyDates, dateFormatter } from '@/utils/datesValidations'
+import { addHours, addSeconds, dateFormatter } from '@/utils/datesValidations'
 import { errorNotification } from '@/utils/notifications'
 import React, { Dispatch, SetStateAction } from 'react'
+import Button from './Inputs/Button'
 
 type TWorklogProps = {
     setTasks: Dispatch<SetStateAction<any>>;
@@ -22,15 +23,21 @@ const Worklog = (props: TWorklogProps) => {
         const fechaIni = document.getElementById("fechaIni") as HTMLInputElement
         const fechaFin = document.getElementById("fechaFin") as HTMLInputElement
 
+        let isSomeDateEmpty: boolean = [fechaIni.value, fechaFin.value].some(d => !d);
+        if (isSomeDateEmpty) {
+            errorNotification("Debes seleccionar ambas fechas");
+            return
+        }
+
         let fechaIniObj = new Date(fechaIni.value)
         let fechaFinObj = new Date(fechaFin.value)
-
-        const isThereAnEmptyDate = checkEmptyDates([fechaIniObj, fechaFinObj]);
-        if (isThereAnEmptyDate) return
-
-
         if (fechaIniObj > fechaFinObj) {
             errorNotification("La fecha final no puede ser menor a la fecha de inicio!");
+            return
+        }
+
+        if (fechaFinObj.getTime() > Date.now() || fechaIniObj.getTime() > Date.now()) {
+            errorNotification("Ninguna de las fechas puede ser mayor a hoy!");
             return
         }
 
@@ -58,12 +65,7 @@ const Worklog = (props: TWorklogProps) => {
                                 <label>Fecha Fin</label>
                                 <input id="fechaFin" type='date' />
                             </section>
-                            <button
-                                onClick={btnGenerateWorkLog}
-                                className='bg-white text-black font-bold rounded-sm hover:bg-slate-100 transition-all'
-                            >
-                                Generar Log
-                            </button>
+                            <Button handleClick={btnGenerateWorkLog} buttonText='Generate Log' />
                         </section>
                     </>
                 )

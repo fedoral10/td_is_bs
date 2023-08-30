@@ -1,5 +1,7 @@
 "use client"
-import React from 'react'
+import React, { useRef } from 'react'
+import { DownloadTableExcel } from 'react-export-table-to-excel'
+import Button from '../Inputs/Button'
 
 type Column = {
     header: string,
@@ -13,6 +15,7 @@ interface IProps {
 }
 
 const Table: React.FC<IProps> = (props) => {
+    const tableRef = useRef(null);
 
     const metadata = React.useMemo(() => {
         const tableArr: any[] = []
@@ -30,26 +33,37 @@ const Table: React.FC<IProps> = (props) => {
     }, [props.columns, props.data])
 
     return (
-        <div className='relative overflow-x-auto shadow-md rounded-lg mt-4'>
-            <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
-                <thead className='text-xs text-gray-200 uppercase bg-gray-50 dark:bg-zinc-900 dark:text-gray-40'>
-                    <tr>
-                        {props?.columns && props.columns.map((obj, i) => {
-                            return <th key={i} className='px-6 py-3'>{obj.header}</th>
-                        })}
-                    </tr>
-                </thead>
-                <tbody>
-                    {metadata?.data && metadata.data.map((row, i) => (
-                        <tr key={i} className='border-b bg-gray-50 dark:bg-zinc-800 dark:border-gray-700'>
-                            {row.map((obj, j) => {
-                                return <td key={j} className='px-6 py-3'>{obj}</td>
+        <>
+            <DownloadTableExcel
+                filename="users table"
+                sheet="users"
+                currentTableRef={tableRef.current}
+            >
+
+                <Button buttonText='Export to Excel' className='px-2 py-1'/>
+
+            </DownloadTableExcel>
+            <div className='relative overflow-x-auto shadow-md rounded-lg mt-4'>
+                <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400' ref={tableRef}>
+                    <thead className='text-xs text-gray-200 uppercase bg-gray-50 dark:bg-zinc-900 dark:text-gray-40'>
+                        <tr>
+                            {props?.columns && props.columns.map((obj, i) => {
+                                return <th key={i} className='px-6 py-3'>{obj.header}</th>
                             })}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {metadata?.data && metadata.data.map((row, i) => (
+                            <tr key={i} className='border-b bg-gray-50 dark:bg-zinc-800 dark:border-gray-700'>
+                                {row.map((obj, j) => {
+                                    return <td key={j} className='px-6 py-3'>{obj}</td>
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </>
     )
 }
 

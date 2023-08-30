@@ -8,10 +8,10 @@ import { ToastContainer } from 'react-toastify'
 import { errorNotification, infoNotification, successNotification } from '@/utils/notifications'
 import { NETFOREMOST_ID } from '@/utils/constants'
 import { buildCatalog } from '@/services/BuildCatalog'
-import { checkEmptyDates } from '@/utils/datesValidations'
 import { TLogin } from '@/models/DTOs'
 import Worklog from '@/components/Worklog'
 import { TCatalog } from '@/models/POJOs'
+import Button from '@/components/Inputs/Button'
 
 const columns = [{
   header: 'Proyecto',
@@ -80,15 +80,10 @@ export default function Home() {
         <section className='flex flex-col gap-1 justify-center'>
           <input id="email" placeholder="email" className='rounded-sm p-2' />
           <input id="pass" placeholder="password" type="password" className='rounded-sm p-2' />
-          <button
-            onClick={btnLoginEvent}
-            className='bg-white text-black font-bold rounded-sm hover:bg-slate-100 transition-all'
-          >
-            Log In
-          </button>
+          <Button buttonText='Log In' handleClick={btnLoginEvent} />
         </section>
 
-        <Worklog {...worklogProps}/>
+        <Worklog {...worklogProps} />
       </article>
       <section>
         {tasks && <Table columns={columns} data={tasks} />}

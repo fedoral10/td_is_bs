@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 import { login, ApiMethods } from '../api'
 import { Table } from '../components'
+import { ToastContainer } from 'react-toastify'
+import { errorNotification, infoNotification, successNotification } from '@/utils/notifications'
 
 Date.prototype.addHours = function (h) {
   this.setTime(this.getTime() + (h * 60 * 60 * 1000));
@@ -56,20 +58,36 @@ export default function Home() {
   const [catalogs, setCatalogs] = useState<any>()
   const [tasks, setTask] = useState<any>()
 
-  const btnLoginEvent = (e) => {
+  const btnLoginEvent = async (e) => {
     e.preventDefault()
     const email = document.getElementById("email") as HTMLInputElement
     const pass = document.getElementById("pass") as HTMLInputElement
-    login(email.value, pass.value).then(r => {
+    let token: string = "";
+
+    if (tokenData!) {
+      infoNotification("Ya hiciste log in!")
+      return
+    }
+
+    await login(email.value, pass.value).then(r => {
+      if (!r.data) {
+        errorNotification(r.message);
+        return
+      }
+
+      token = r.data.token;
       setTokenData(r.data)
-      // console.log(r)
-    }).catch(e => {
-      console.log("error")
-      console.log(e)
+      successNotification("Te has loggeado! Ya puedes consultar tus logs del TD!");
     })
+
+    if (token) {
+      buildCatalog(token).then(r => {
+        setCatalogs(r)
+      })
+    }
   }
-  const buildCatalog = async () => {
-    const methods = ApiMethods(tokenData.token)
+  const buildCatalog = async (token) => {
+    const methods = ApiMethods(token)
     const projects = await methods.projects(NetForemostId)
     const tasks = await methods.task(NetForemostId)
 
@@ -105,18 +123,32 @@ export default function Home() {
     })
     return o
   }
-  const btnCatalogsEvent = (e) => {
-    if (!tokenData?.token) return
-    e.preventDefault()
-    buildCatalog().then(r => {
-      setCatalogs(r)
-    })
-  }
+
+  // const btnCatalogsEvent = (e) => {
+  //   if (!tokenData?.token) return
+  //   e.preventDefault()
+  //   buildCatalog().then(r => {
+  //     setCatalogs(r)
+  //   })
+  // }
+
+  // const btnCatalogEvent = () => {
+  //   buildCatalog().then(r => {
+  //     setCatalogs(r)
+  //   })
+  // }
+
   const btnGenerateWorkLog = (e) => {
     e.preventDefault()
-    if (!catalogs) return
+    // if (!catalogs) return
     const fechaIni = document.getElementById("fechaIni") as HTMLInputElement
     const fechaFin = document.getElementById("fechaFin") as HTMLInputElement
+
+    if (!fechaIni.value || !fechaFin.value) {
+      errorNotification("Debes seleccionar ambas fechas");
+      return
+    }
+
     const fechaIniObj = new Date(fechaIni.value)
     const fechaFinObj = new Date(fechaFin.value)
     fechaFinObj.addHours(24)
@@ -128,14 +160,17 @@ export default function Home() {
     })
   }
   return (
-    <main className={styles.main}>
-      <article>
-        <section className={styles.description}>
-          <input id="email" placeholder="email" />
-          <input id="pass" placeholder="password" type="password" />
-          <button onClick={btnLoginEvent}>Get info</button>
+    <main className={`${styles.main} container`}>
+      <article className='flex flex-col gap-2'>
+        <section className='flex flex-col gap-1 justify-center'>
+          <input id="email" placeholder="email" className='rounded-sm p-2' />
+          <input id="pass" placeholder="password" type="password" className='rounded-sm p-2' />
+          <button onClick={btnLoginEvent} className='bg-white text-black font-bold rounded-sm hover:bg-slate-100 transition-all'>
+            Log In
+          </button>
         </section>
-        <section>
+
+        {/* <section>
           <button onClick={btnCatalogsEvent}>Get Catalogs</button>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
             {catalogs && catalogs.map((proj, i) => {
@@ -149,23 +184,34 @@ export default function Home() {
               </div>
             })}
           </div>
-        </section>
-        <section>
-          <h4>Worklog</h4>
-          <section>
-            <label>Fecha Ini</label>
-            <input id="fechaIni" type='date' />
-          </section>
-          <section>
-            <label>Fecha Fin</label>
-            <input id="fechaFin" type='date' />
-          </section>
-          <button onClick={btnGenerateWorkLog}>Generar</button>
-        </section>
-        <section>
-          {tasks && <Table columns={columns} data={tasks} />}
-        </section>
+        </section> */}
+
+        {
+          tokenData! && (
+            <>
+              <section className='flex flex-col gap-2 justify-center'>
+                <h4 className='text-lg'>Worklog</h4>
+                <section className='flex flex-col'>
+                  <label>Fecha Inicio</label>
+                  <input id="fechaIni" type='date' />
+                </section>
+                <section className='flex flex-col'>
+                  <label>Fecha Fin</label>
+                  <input id="fechaFin" type='date' />
+                </section>
+                <button onClick={btnGenerateWorkLog} className='bg-white text-black font-bold rounded-sm hover:bg-slate-100 transition-all'>
+                  Generar Log
+                </button>
+              </section>
+            </>
+          )
+        }
       </article>
+      <section>
+        {tasks && <Table columns={columns} data={tasks} />}
+      </section>
+
+      <ToastContainer />
     </main>
   )
 }

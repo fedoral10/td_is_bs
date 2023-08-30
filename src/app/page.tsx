@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, MouseEventHandler } from 'react'
+import { useState } from 'react'
 import styles from './page.module.css'
-import { login, ApiMethods } from '../api'
+import { login } from '../api'
 import { Table } from '../components'
 import { ToastContainer } from 'react-toastify'
 import { errorNotification, infoNotification, successNotification } from '@/utils/notifications'

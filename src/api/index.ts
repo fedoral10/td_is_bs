@@ -22,7 +22,9 @@ export const login = (email, password) => {
             email,
             password,
         })
-    }).then(r => r.json())
+    })
+    .then(r => r.json())
+    .catch(error => error.json())
 }
 
 

@@ -1,7 +1,7 @@
 import { TLogin } from '@/models/DTOs'
 import { TCatalog } from '@/models/POJOs'
 import { buildWorklogObj } from '@/services/BuildWorklog'
-import { addHours, addSeconds } from '@/utils/datesValidations'
+import { addHours, addSeconds, getTimezone } from '@/utils/datesValidations'
 import { errorNotification } from '@/utils/notifications'
 import React, { Dispatch, SetStateAction } from 'react'
 import Button from './Inputs/Button'
@@ -27,8 +27,9 @@ const Worklog = (props: TWorklogProps) => {
             return
         }
 
-        let fechaIniObj = new Date(fechaIni.value)
-        let fechaFinObj = new Date(fechaFin.value)
+        let fechaIniObj = new Date(`${fechaIni.value}T00:00:00.000${getTimezone()}`)
+        let fechaFinObj = new Date(`${fechaFin.value}T00:00:00.000${getTimezone()}`)
+        
         if (fechaIniObj > fechaFinObj) {
             errorNotification("La fecha final no puede ser menor a la fecha de inicio!");
             return

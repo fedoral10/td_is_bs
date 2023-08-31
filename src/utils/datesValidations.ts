@@ -27,3 +27,10 @@ export const getHourBySeconds = (seconds) => {
 
     return `${hTime.toString().padStart(2, '0')}:${mTime.toString().padStart(2, '0')}:${sTime.toString().padStart(2, '0')}`
 }
+
+export const getTimezone = ()=>{
+    const d = new Date()
+    const hours = (d.getTimezoneOffset() / 60)
+    // Por alguna razon cuando es GMT- la timezoneOffset da positivo, caso contrario cuando es GMT+
+    return `${hours>0?'-':'+'}${Math.abs(hours).toString().padStart(2,'0')}:00`
+}

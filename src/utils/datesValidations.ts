@@ -4,6 +4,11 @@ export const dateFormatter = Intl.DateTimeFormat('es-ES', {
     timeStyle: 'short'
 })
 
+export const dateInputFormatter = (date:Date)=>{
+    const arr = date.toISOString().split('T')
+    return arr[0]
+}
+
 export const addHours = (dateParam: Date, hours: number) => {
     const date: Date = dateParam;
     date.setTime(date.getTime() + (hours * 60 * 60 * 1000));

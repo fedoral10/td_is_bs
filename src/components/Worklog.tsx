@@ -1,7 +1,7 @@
 import { TLogin } from '@/models/DTOs'
 import { TCatalog } from '@/models/POJOs'
 import { buildWorklogObj } from '@/services/BuildWorklog'
-import { addHours, addSeconds, getTimezone } from '@/utils/datesValidations'
+import { addHours, addSeconds, dateFormatter, dateInputFormatter, getTimezone } from '@/utils/datesValidations'
 import { errorNotification } from '@/utils/notifications'
 import React, { Dispatch, SetStateAction } from 'react'
 import Button from './Inputs/Button'
@@ -58,11 +58,11 @@ const Worklog = (props: TWorklogProps) => {
                             <h4 className='text-lg'>Worklog</h4>
                             <section className='flex flex-col'>
                                 <label>Fecha Inicio</label>
-                                <input id="fechaIni" type='date' />
+                                <input id="fechaIni" type='date' defaultValue={dateInputFormatter(new Date())} />
                             </section>
                             <section className='flex flex-col'>
                                 <label>Fecha Fin</label>
-                                <input id="fechaFin" type='date' />
+                                <input id="fechaFin" type='date' defaultValue={dateInputFormatter(new Date())} />
                             </section>
                             <Button handleClick={btnGenerateWorkLog} buttonText='Generate Log' />
                         </section>

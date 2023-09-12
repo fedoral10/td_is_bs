@@ -2,6 +2,7 @@
 import React, { useRef } from 'react'
 import { DownloadTableExcel } from 'react-export-table-to-excel'
 import Button from '../Inputs/Button'
+import { successNotification } from '@/utils/notifications'
 
 type Column = {
     header: string,
@@ -31,7 +32,25 @@ const Table: React.FC<IProps> = (props) => {
             data: tableArr
         }
     }, [props.columns, props.data])
+    const onBtnClipBrdClick = () => {
+        let str = ''
+        metadata.data.map((row) => {
+            row.map((obj, j) => {
+                if (j == row.length - 1)
+                    str += obj
+                else {
+                    if (j == 1 || j == 2)
+                        str += '\t' + obj + '\t'
+                    else
+                        str += obj + '\t'
+                }
+            })
+            str += '\n'
+        })
+        navigator.clipboard.writeText(str)
 
+        successNotification('Copied to Clipboard!')
+    }
     return (
         <>
             <DownloadTableExcel
@@ -40,9 +59,10 @@ const Table: React.FC<IProps> = (props) => {
                 currentTableRef={tableRef.current}
             >
 
-                <Button buttonText='Export to Excel' className='px-2 py-1'/>
+                <Button buttonText='Export to Excel' className='px-2 py-1' />
 
             </DownloadTableExcel>
+            <Button buttonText='To Clipboard' className='ml-2 px-2 py-1' handleClick={onBtnClipBrdClick}/>
             <div className='relative overflow-x-auto shadow-md rounded-lg mt-4'>
                 <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400' ref={tableRef}>
                     <thead className='text-xs text-gray-200 uppercase bg-gray-50 dark:bg-zinc-900 dark:text-gray-40'>
